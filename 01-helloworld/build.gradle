@@ -15,6 +15,6 @@ dependencies {
     compile(project(":spring-context"))
     compile(project(":spring-test"))
     testCompile group: 'junit', name: 'junit', version: '4.12'
-
+    // 这两种引入junit的区别？
     testImplementation 'junit:junit:4.12'
 }
