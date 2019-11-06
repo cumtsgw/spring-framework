@@ -62,6 +62,11 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 * Create a new AnnotationConfigApplicationContext that needs to be populated
 	 * through {@link #register} calls and then manually {@linkplain #refresh refreshed}.
 	 */
+	/*
+	初始化reader和scanner
+	reader的作用：AnnotatedBeanDefinitionReader，根据注解读取 BeanDefinition
+	scanner的作用：ClassPathBeanDefinitionScanner，根据注解扫描 BeanDefinition
+	 */
 	public AnnotationConfigApplicationContext() {
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
@@ -85,7 +90,10 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
 		this();
-		register(componentClasses);
+
+		register(componentClasses); // 扫描并注册BeanDefinition
+		// Spring容器的核心方法，这个方法搞懂，spring就懂了一半
+		// TODO refresh()方法执行过程中，还会扫描BeanDefinition吗？
 		refresh();
 	}
 
@@ -157,6 +165,8 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	@Override
 	public void register(Class<?>... componentClasses) {
 		Assert.notEmpty(componentClasses, "At least one component class must be specified");
+		// 将起始的配置类传给了AnnotatedBeanDefinitionReader
+		// 并开始注册bean: doRegisterBean()
 		this.reader.register(componentClasses);
 	}
 

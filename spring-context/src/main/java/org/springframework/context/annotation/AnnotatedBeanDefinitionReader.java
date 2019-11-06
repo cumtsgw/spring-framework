@@ -34,9 +34,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
 /**
- * Convenient adapter for programmatic registration of bean classes.
+ * Convenient(方便的) adapter for programmatic registration of bean classes.
  *
- * <p>This is an alternative to {@link ClassPathBeanDefinitionScanner}, applying
+ * <p>This is an alternative(选择性的) to {@link ClassPathBeanDefinitionScanner}, applying
  * the same resolution of annotations but for explicitly registered classes only.
  *
  * @author Juergen Hoeller
