@@ -148,6 +148,7 @@ class ConstructorResolver {
 				}
 			}
 			if (argsToResolve != null) {
+				// 类型匹配，比如给的是类的全限定名字符串，要转相应的Class
 				argsToUse = resolvePreparedArguments(beanName, mbd, bw, constructorToUse, argsToResolve, true);
 			}
 		}
@@ -186,17 +187,22 @@ class ConstructorResolver {
 					mbd.getResolvedAutowireMode() == AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR);
 			ConstructorArgumentValues resolvedValues = null;
 
+			// min number of args
 			int minNrOfArgs;
 			if (explicitArgs != null) {
 				minNrOfArgs = explicitArgs.length;
 			}
 			else {
+				// resolvedValues和cargs有什么作用，为什么要有两个ConstructorArgumentValues这个类的实例
 				ConstructorArgumentValues cargs = mbd.getConstructorArgumentValues();
 				resolvedValues = new ConstructorArgumentValues();
+				// 通过分析，cargs和resolvedValues应该是一样，只是resolvedValues是解析过的
 				minNrOfArgs = resolveConstructorArguments(beanName, mbd, bw, cargs, resolvedValues);
+				// cargs转成resolvedValues就释放了，后面没有调用的地方了
 			}
 
 			AutowireUtils.sortConstructors(candidates);
+			// 最小参数不同的权重
 			int minTypeDiffWeight = Integer.MAX_VALUE;
 			Set<Constructor<?>> ambiguousConstructors = null;
 			LinkedList<UnsatisfiedDependencyException> causes = null;
@@ -246,9 +252,12 @@ class ConstructorResolver {
 					argsHolder = new ArgumentsHolder(explicitArgs);
 				}
 
+				// 权重值计算的算法比较复杂，范围更广泛的值要大些
+				// constructor(interface)比constructor(abstractClass)的值要大，这个的计算方法待研究？
 				int typeDiffWeight = (mbd.isLenientConstructorResolution() ?
 						argsHolder.getTypeDifferenceWeight(paramTypes) : argsHolder.getAssignabilityWeight(paramTypes));
 				// Choose this constructor if it represents the closest match.
+				// 决定使用哪个构造方法，找到差异权重最小的
 				if (typeDiffWeight < minTypeDiffWeight) {
 					constructorToUse = candidate;
 					argsHolderToUse = argsHolder;
@@ -660,6 +669,7 @@ class ConstructorResolver {
 		BeanDefinitionValueResolver valueResolver =
 				new BeanDefinitionValueResolver(this.beanFactory, beanName, mbd, converter);
 
+		// 一般都是0，表示spring需要使用构造方法的参数列表的最小长度
 		int minNrOfArgs = cargs.getArgumentCount();
 
 		for (Map.Entry<Integer, ConstructorArgumentValues.ValueHolder> entry : cargs.getIndexedArgumentValues().entrySet()) {
@@ -728,6 +738,9 @@ class ConstructorResolver {
 				// If we couldn't find a direct match and are not supposed to autowire,
 				// let's try the next generic, untyped argument value as fallback:
 				// it could match after type conversion (for example, String -> int).
+				// paramTypes -- 构造方法的参数类型数组 Class[]
+				// resolvedValues -- 构造方法参数解析后的对象
+				// 一个构造方法的参数列表的长度和解析后的长度，一般都是一样的长，为什么还要比较呢？
 				if (valueHolder == null && (!autowiring || paramTypes.length == resolvedValues.getArgumentCount())) {
 					valueHolder = resolvedValues.getGenericArgumentValue(null, null, usedValueHolders);
 				}

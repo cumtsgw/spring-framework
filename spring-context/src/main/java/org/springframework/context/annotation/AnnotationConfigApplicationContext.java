@@ -90,10 +90,14 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... componentClasses) {
 		this();
-
+		// HelloConfig.java
 		register(componentClasses); // 扫描并注册BeanDefinition
 		// Spring容器的核心方法，这个方法搞懂，spring就懂了一半
-		// TODO refresh()方法执行过程中，还会扫描BeanDefinition吗？
+		/*
+		 * refresh()方法执行过程中，还会扫描BeanDefinition吗? 还会有可能注入BeanDefinition，原因就是
+		 * 在DefaultListableBeanFactory.registerBeanDefinition()方法中考虑了Bean已经创建了的情况
+		 *
+		 */
 		refresh();
 	}
 
@@ -167,6 +171,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		Assert.notEmpty(componentClasses, "At least one component class must be specified");
 		// 将起始的配置类传给了AnnotatedBeanDefinitionReader
 		// 并开始注册bean: doRegisterBean()
+		// 最终目的 this.beanDefinitionMap.put(beanName, beanDefinition);
 		this.reader.register(componentClasses);
 	}
 

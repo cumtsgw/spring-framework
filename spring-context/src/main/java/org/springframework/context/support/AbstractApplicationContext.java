@@ -889,7 +889,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Initialize lifecycle processor for this context.
 		initLifecycleProcessor();
-
 		// Propagate refresh to lifecycle processor first.
 		getLifecycleProcessor().onRefresh();
 
